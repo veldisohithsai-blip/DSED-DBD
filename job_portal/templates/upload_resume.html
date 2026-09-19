@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Upload resume{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="form-wide">
+    <h1>Upload your resume</h1>
+    <p class="auth-sub">Upload a PDF resume. We'll extract your skills automatically using PyPDF2 and use them to calculate match scores when you apply.</p>
+
+    <form method="POST" action="{{ url_for('upload_resume') }}" enctype="multipart/form-data">
+      <div class="dropzone" id="dropzone">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p style="margin:0; font-weight:600; color:var(--navy-dark);">Click to upload or drag and drop</p>
+        <p style="margin:4px 0 0; font-size:0.85rem;">PDF files only</p>
+        <div id="dropzone-filename" class="dropzone-filename"></div>
+      </div>
+      <input type="file" id="resume-file-input" name="resume" accept=".pdf" style="display:none;" required>
+
+      <button type="submit" class="btn btn-accent btn-block" style="margin-top:22px;">Upload &amp; parse resume</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

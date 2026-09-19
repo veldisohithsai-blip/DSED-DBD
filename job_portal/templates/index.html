@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="hero-eyebrow">Job portal &middot; resume parsing &amp; matching</span>
+      <h1>Find roles that actually fit your skills.</h1>
+      <p class="lead">
+        SkillBridge reads your resume, compares it against every job's requirements,
+        and shows you a match score before you apply — so you spend time on the
+        roles worth applying to.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('register') }}" class="btn btn-accent">Get started free</a>
+        <a href="{{ url_for('jobs') }}" class="btn btn-ghost">Browse open roles</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="num">{{ stats.jobs }}</div>
+          <div class="label">Open positions</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">{{ stats.companies }}</div>
+          <div class="label">Hiring companies</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">{{ stats.seekers }}</div>
+          <div class="label">Job seekers</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="match-card">
+      <div class="match-card-top">
+        <div>
+          <h4>Python Developer</h4>
+          <span>TechNova Inc &middot; Hyderabad</span>
+        </div>
+      </div>
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 108 108" data-ring-score="79">
+          <circle class="ring-bg" cx="54" cy="54" r="48"></circle>
+          <circle class="ring-fg" cx="54" cy="54" r="48"></circle>
+        </svg>
+        <div class="ring-label">
+          <div class="ring-percent">79%</div>
+          <div class="ring-caption">match score</div>
+        </div>
+      </div>
+      <div class="match-skill-row">
+        <span class="chip">Python</span>
+        <span class="chip">Flask</span>
+        <span class="chip">Git</span>
+        <span class="chip chip-missing">REST API</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>Recently posted roles</h2>
+        <p>A snapshot of what's currently open on SkillBridge.</p>
+      </div>
+      <a href="{{ url_for('jobs') }}" class="btn btn-ghost btn-sm">View all jobs</a>
+    </div>
+
+    <div class="grid-3">
+      {% for job in featured_jobs %}
+      <a href="{{ url_for('job_details', job_id=job['job_id']) }}" class="job-card type-{{ job['job_type'] }}">
+        <div class="job-card-top">
+          <div>
+            <h3>{{ job['title'] }}</h3>
+            <div class="company">{{ job['company'] }} &middot; {{ job['location'] }}</div>
+          </div>
+        </div>
+        <div class="job-meta">
+          <span>{{ job['job_type'] }}</span>
+          {% if job['salary_range'] %}<span>{{ job['salary_range'] }}</span>{% endif %}
+        </div>
+        <div class="skills-preview">{{ job['skills_required'] }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>How it works</h2>
+        <p>Three steps from resume to interview.</p>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="panel">
+        <h3>Upload your resume</h3>
+        <p style="color:var(--muted); margin:0;">Drop in a PDF and SkillBridge extracts your skills automatically using PyPDF2.</p>
+      </div>
+      <div class="panel">
+        <h3>Get matched</h3>
+        <p style="color:var(--muted); margin:0;">Every application is scored against the job's required skills, instantly.</p>
+      </div>
+      <div class="panel">
+        <h3>Track your progress</h3>
+        <p style="color:var(--muted); margin:0;">Follow application status from pending to shortlisted to hired, in one place.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

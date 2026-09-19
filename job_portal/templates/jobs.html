@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Browse jobs{% endblock %}
+{% block content %}
+<div class="container section-tight">
+  <div class="section-head">
+    <div>
+      <h2>Browse jobs</h2>
+      <p>{{ jobs|length }} open position{{ 's' if jobs|length != 1 else '' }} found.</p>
+    </div>
+  </div>
+
+  <form class="filter-bar" method="GET" action="{{ url_for('jobs') }}">
+    <input type="text" name="keyword" value="{{ keyword }}" placeholder="Search by title, company or skill...">
+    <select name="location">
+      <option value="">All locations</option>
+      {% for loc in all_locations %}
+        <option value="{{ loc }}" {{ 'selected' if loc == location }}>{{ loc }}</option>
+      {% endfor %}
+    </select>
+    <select name="job_type">
+      <option value="">All job types</option>
+      {% for jt in ['Full-time','Part-time','Internship','Remote'] %}
+        <option value="{{ jt }}" {{ 'selected' if jt == job_type }}>{{ jt }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+    {% if keyword or location or job_type %}
+      <a href="{{ url_for('jobs') }}" class="btn btn-ghost btn-sm">Clear</a>
+    {% endif %}
+  </form>
+
+  {% if jobs %}
+  <div class="job-list">
+    {% for job in jobs %}
+    <a href="{{ url_for('job_details', job_id=job['job_id']) }}" class="job-card type-{{ job['job_type'] }}">
+      <div class="job-card-top">
+        <div>
+          <h3>{{ job['title'] }}</h3>
+          <div class="company">{{ job['company'] }} &middot; {{ job['location'] }}</div>
+        </div>
+      </div>
+      <div class="job-meta">
+        <span>{{ job['job_type'] }}</span>
+        {% if job['salary_range'] %}<span>{{ job['salary_range'] }}</span>{% endif %}
+      </div>
+      <div class="skills-preview">Required: {{ job['skills_required'] }}</div>
+      <div class="job-card-footer">
+        <span class="posted-tag">Posted {{ job['posted_at'].split(' ')[0] }}</span>
+        <span class="btn btn-ghost btn-sm">View details</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <p style="margin:0;">No jobs match your filters. Try a different search.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

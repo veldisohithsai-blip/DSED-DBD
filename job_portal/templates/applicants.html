@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Applicants{% endblock %}
+{% block content %}
+<div class="container section-tight">
+  <div class="section-head">
+    <div>
+      <h2>Applicants for {{ job['title'] }}</h2>
+      <p>{{ applicants|length }} applicant{{ 's' if applicants|length != 1 else '' }} &middot; sorted by match score</p>
+    </div>
+    <a href="{{ url_for('recruiter_dashboard') }}" class="btn btn-ghost btn-sm">Back to dashboard</a>
+  </div>
+
+  {% if applicants %}
+  <div class="panel" style="overflow-x:auto;">
+    <table class="applicant-table">
+      <thead>
+        <tr>
+          <th>Candidate</th>
+          <th>Resume</th>
+          <th>Match score</th>
+          <th>Matched skills</th>
+          <th>Status</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in applicants %}
+        <tr>
+          <td>
+            <div style="font-weight:600;">{{ a['name'] }}</div>
+            <div style="color:var(--muted); font-size:0.82rem;">{{ a['email'] }}</div>
+          </td>
+          <td><a href="{{ url_for('uploaded_file', filename=a['filepath'].split('/')[-1]) }}" target="_blank" class="btn btn-ghost btn-sm">{{ a['filename'] }}</a></td>
+          <td>
+            {% if a['match_score'] is not none %}
+            <div class="mini-ring-wrap">
+              <svg class="mini-ring" viewBox="0 0 42 42" data-ring-score="{{ a['match_score'] }}">
+                <circle class="mini-ring-bg" cx="21" cy="21" r="16"></circle>
+                <circle class="mini-ring-fg" cx="21" cy="21" r="16"></circle>
+              </svg>
+              <span class="mini-ring-text">{{ a['match_score']|round|int }}%</span>
+            </div>
+            {% else %}
+            &mdash;
+            {% endif %}
+          </td>
+          <td style="max-width:220px;">
+            <div class="match-skill-row">
+              {% if a['matched_skills'] %}
+                {% for s in a['matched_skills'].split(',') if s.strip() %}
+                  <span class="chip">{{ s.strip() }}</span>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </td>
+          <td><span class="status-badge status-{{ a['status'] }}">{{ a['status'] }}</span></td>
+          <td>
+            <form method="POST" action="{{ url_for('update_status', application_id=a['application_id']) }}">
+              <select name="status" onchange="this.form.submit()" style="padding:6px 10px; border-radius:6px; border:1px solid var(--border);">
+                {% for s in ['Pending','Shortlisted','Hired','Rejected'] %}
+                  <option value="{{ s }}" {{ 'selected' if s == a['status'] }}>{{ s }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p style="margin:0;">No applicants yet for this job.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

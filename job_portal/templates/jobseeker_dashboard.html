@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<section class="dash-header">
+  <div class="container">
+    <div>
+      <h1>Welcome back, {{ logged_in_user['name'].split(' ')[0] }}</h1>
+      <p>Here's where your job search stands today.</p>
+    </div>
+    <a href="{{ url_for('jobs') }}" class="btn btn-accent">Browse jobs</a>
+  </div>
+</section>
+
+<div class="container">
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="num">{{ resumes|length }}</div>
+      <div class="label">Resumes uploaded</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">{{ applications|length }}</div>
+      <div class="label">Applications sent</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">{{ applications|selectattr('status','equalto','Shortlisted')|list|length }}</div>
+      <div class="label">Shortlisted</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">{{ applications|selectattr('status','equalto','Hired')|list|length }}</div>
+      <div class="label">Offers received</div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Recent applications</h3>
+          <a href="{{ url_for('applications') }}" class="btn btn-ghost btn-sm">View all</a>
+        </div>
+        {% if applications %}
+          {% for a in applications[:5] %}
+          <div class="app-row">
+            <div class="app-row-main">
+              <h4>{{ a['title'] }}</h4>
+              <div class="meta">{{ a['company'] }} &middot; {{ a['location'] }}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:16px;">
+              {% if a['match_score'] is not none %}
+              <div class="mini-ring-wrap">
+                <svg class="mini-ring" viewBox="0 0 42 42" data-ring-score="{{ a['match_score'] }}">
+                  <circle class="mini-ring-bg" cx="21" cy="21" r="16"></circle>
+                  <circle class="mini-ring-fg" cx="21" cy="21" r="16"></circle>
+                </svg>
+                <span class="mini-ring-text">{{ a['match_score']|round|int }}%</span>
+              </div>
+              {% endif %}
+              <span class="status-badge status-{{ a['status'] }}">{{ a['status'] }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+        <div class="empty-state">
+          <p style="margin:0;">You haven't applied to any jobs yet.</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Recommended for you</h3>
+        </div>
+        <div class="grid-2">
+          {% for job in recommended_jobs %}
+          <a href="{{ url_for('job_details', job_id=job['job_id']) }}" class="job-card type-{{ job['job_type'] }}">
+            <h3>{{ job['title'] }}</h3>
+            <div class="company">{{ job['company'] }} &middot; {{ job['location'] }}</div>
+            <div class="job-meta"><span>{{ job['job_type'] }}</span></div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Your resumes</h3>
+          <a href="{{ url_for('upload_resume') }}" class="btn btn-ghost btn-sm">Upload new</a>
+        </div>
+        {% if resumes %}
+          {% for r in resumes %}
+          <div class="resume-item">
+            <div>
+              <div class="rname">{{ r['filename'] }}</div>
+              <div class="rmeta">Uploaded {{ r['uploaded_at'].split(' ')[0] }}</div>
+              {% if r['skills'] %}
+              <div class="resume-skills">
+                {% for s in r['skills'].split(',')[:5] %}
+                  <span class="chip">{{ s.strip() }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+        <div class="empty-state">
+          <p style="margin:0 0 14px;">No resume uploaded yet.</p>
+          <a href="{{ url_for('upload_resume') }}" class="btn btn-accent btn-sm">Upload resume</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

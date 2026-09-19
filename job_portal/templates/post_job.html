@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Post a job{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="form-wide">
+    <h1>Post a new job</h1>
+    <p class="auth-sub">Fill in the details below. Listing skills accurately improves match-score accuracy for applicants.</p>
+
+    <form method="POST" action="{{ url_for('post_job') }}">
+      <div class="field">
+        <label for="title">Job title</label>
+        <input type="text" id="title" name="title" required placeholder="e.g. Backend Developer">
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="company">Company name</label>
+          <input type="text" id="company" name="company" placeholder="{{ logged_in_user['company_name'] or 'Your company' }}">
+        </div>
+        <div class="field">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location" required placeholder="e.g. Hyderabad / Remote">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="job_type">Job type</label>
+          <select id="job_type" name="job_type" required>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Internship">Internship</option>
+            <option value="Remote">Remote</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="salary_range">Salary range (optional)</label>
+          <input type="text" id="salary_range" name="salary_range" placeholder="e.g. 6-9 LPA">
+        </div>
+      </div>
+      <div class="field">
+        <label for="description">Job description</label>
+        <textarea id="description" name="description" required placeholder="Describe the role and responsibilities..."></textarea>
+      </div>
+      <div class="field">
+        <label for="skills_required">Required skills (comma-separated)</label>
+        <input type="text" id="skills_required" name="skills_required" required placeholder="e.g. Python, Flask, SQL, Git">
+      </div>
+      <button type="submit" class="btn btn-accent btn-block">Post job</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

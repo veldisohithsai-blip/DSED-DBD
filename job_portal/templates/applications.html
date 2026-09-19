@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}My applications{% endblock %}
+{% block content %}
+<div class="container section-tight">
+  <div class="section-head">
+    <div>
+      <h2>My applications</h2>
+      <p>Track every application and its match score in one place.</p>
+    </div>
+  </div>
+
+  {% if applications %}
+  <div class="job-list">
+    {% for a in applications %}
+    <div class="app-row" style="flex-wrap:wrap;">
+      <div class="app-row-main">
+        <h4>{{ a['title'] }}</h4>
+        <div class="meta">{{ a['company'] }} &middot; {{ a['location'] }} &middot; {{ a['job_type'] }}</div>
+        <div class="meta">Applied {{ a['applied_at'].split(' ')[0] }}</div>
+        {% if a['matched_skills'] %}
+        <div class="match-skill-row" style="margin-top:10px;">
+          {% for s in a['matched_skills'].split(',') if s.strip() %}
+            <span class="chip">{{ s.strip() }}</span>
+          {% endfor %}
+          {% for s in a['missing_skills'].split(',') if s.strip() %}
+            <span class="chip chip-missing">{{ s.strip() }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div style="display:flex; align-items:center; gap:20px;">
+        {% if a['match_score'] is not none %}
+        <div class="mini-ring-wrap">
+          <svg class="mini-ring" viewBox="0 0 42 42" data-ring-score="{{ a['match_score'] }}">
+            <circle class="mini-ring-bg" cx="21" cy="21" r="16"></circle>
+            <circle class="mini-ring-fg" cx="21" cy="21" r="16"></circle>
+          </svg>
+          <span class="mini-ring-text">{{ a['match_score']|round|int }}%</span>
+        </div>
+        {% endif %}
+        <span class="status-badge status-{{ a['status'] }}">{{ a['status'] }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p style="margin:0 0 14px;">You haven't applied to any jobs yet.</p>
+    <a href="{{ url_for('jobs') }}" class="btn btn-accent btn-sm">Browse jobs</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

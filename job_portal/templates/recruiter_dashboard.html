@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Recruiter dashboard{% endblock %}
+{% block content %}
+
+<section class="dash-header">
+  <div class="container">
+    <div>
+      <h1>{{ logged_in_user['company_name'] or logged_in_user['name'] }}</h1>
+      <p>Manage your job postings and review applicants.</p>
+    </div>
+    <a href="{{ url_for('post_job') }}" class="btn btn-accent">Post a new job</a>
+  </div>
+</section>
+
+<div class="container">
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="num">{{ jobs|length }}</div>
+      <div class="label">Active job postings</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">{{ total_applicants }}</div>
+      <div class="label">Total applicants</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Your job postings</h3>
+    </div>
+    {% if jobs %}
+      {% for job in jobs %}
+      <div class="app-row">
+        <div class="app-row-main">
+          <h4>{{ job['title'] }}</h4>
+          <div class="meta">{{ job['location'] }} &middot; {{ job['job_type'] }} &middot; Posted {{ job['posted_at'].split(' ')[0] }}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <span class="status-badge status-Shortlisted">{{ job['applicant_count'] }} applicant{{ 's' if job['applicant_count'] != 1 else '' }}</span>
+          <a href="{{ url_for('view_applicants', job_id=job['job_id']) }}" class="btn btn-ghost btn-sm">View applicants</a>
+          <a href="{{ url_for('edit_job', job_id=job['job_id']) }}" class="btn btn-ghost btn-sm">Edit</a>
+          <form method="POST" action="{{ url_for('delete_job', job_id=job['job_id']) }}" style="display:inline;" onsubmit="return confirm('Delete this job posting? This will also remove its applications and matching results.');">
+            <button type="submit" class="btn btn-ghost btn-sm">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="empty-state">
+      <p style="margin:0 0 14px;">You haven't posted any jobs yet.</p>
+      <a href="{{ url_for('post_job') }}" class="btn btn-accent btn-sm">Post your first job</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

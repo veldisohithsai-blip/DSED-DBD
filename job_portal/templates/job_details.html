@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ job['title'] }}{% endblock %}
+{% block content %}
+
+<section class="job-hero">
+  <div class="container">
+    <h1>{{ job['title'] }}</h1>
+    <div class="company-line">{{ job['company'] }} &middot; {{ job['location'] }}</div>
+    <div class="job-meta" style="margin-top:16px;">
+      <span>{{ job['job_type'] }}</span>
+      {% if job['salary_range'] %}<span>{{ job['salary_range'] }}</span>{% endif %}
+      <span>Posted {{ job['posted_at'].split(' ')[0] }}</span>
+    </div>
+  </div>
+</section>
+
+<div class="container section-tight">
+  <div class="job-detail-grid">
+    <div>
+      <div class="panel">
+        <h3>Job description</h3>
+        <p style="color:var(--ink);">{{ job['description'] }}</p>
+      </div>
+      <div class="panel">
+        <h3>Required skills</h3>
+        <div class="match-skill-row">
+          {% for skill in job['skills_required'].split(',') %}
+            <span class="chip chip-neutral">{{ skill.strip() }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="panel">
+        <h3>About the recruiter</h3>
+        <p style="margin:0; color:var(--muted);">
+          Posted by {{ recruiter['name'] }}{% if recruiter['company_name'] %} &middot; {{ recruiter['company_name'] }}{% endif %}
+        </p>
+      </div>
+    </div>
+
+    <div class="apply-card">
+      {% if logged_in_user and logged_in_user['role'] == 'jobseeker' %}
+        {% if already_applied %}
+          <h3 style="margin-bottom:8px;">Already applied</h3>
+          <p style="color:var(--muted); font-size:0.9rem;">You've already submitted an application for this role.</p>
+          <a href="{{ url_for('applications') }}" class="btn btn-ghost btn-block">View my applications</a>
+        {% elif not user_resumes %}
+          <h3 style="margin-bottom:8px;">Upload a resume first</h3>
+          <p style="color:var(--muted); font-size:0.88rem; margin-bottom:18px;">
+            You'll need a resume on file so we can calculate your match score.
+          </p>
+          <a href="{{ url_for('upload_resume') }}" class="btn btn-accent btn-block">Upload resume</a>
+        {% else %}
+          <h3 style="margin-bottom:8px;">Apply to this job</h3>
+          <p style="color:var(--muted); font-size:0.88rem; margin-bottom:18px;">
+            We'll calculate your match score against the resume you choose below.
+          </p>
+          <form method="POST" action="{{ url_for('apply_to_job', job_id=job['job_id']) }}">
+            <div class="field">
+              <label for="resume_id">Choose resume</label>
+              <select name="resume_id" id="resume_id" required>
+                {% for r in user_resumes %}
+                  <option value="{{ r['resume_id'] }}">{{ r['filename'] }} &middot; {{ r['uploaded_at'].split(' ')[0] }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-accent btn-block">Apply now</button>
+          </form>
+        {% endif %}
+      {% elif logged_in_user and logged_in_user['role'] == 'recruiter' %}
+        <p style="color:var(--muted); font-size:0.9rem; margin:0;">Recruiter accounts browse listings but cannot apply to jobs.</p>
+      {% else %}
+        <h3 style="margin-bottom:8px;">Ready to apply?</h3>
+        <p style="color:var(--muted); font-size:0.88rem; margin-bottom:18px;">Log in as a job seeker to apply with your resume.</p>
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-block">Log in to apply</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

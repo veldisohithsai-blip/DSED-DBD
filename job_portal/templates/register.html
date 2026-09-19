@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="auth-wrap">
+    <h1>Create your account</h1>
+    <p class="auth-sub">Join as a job seeker or a recruiter.</p>
+
+    <form method="POST" action="{{ url_for('register') }}" id="register-form">
+      <div class="role-toggle">
+        <label>
+          <input type="radio" name="role" value="jobseeker" checked onchange="document.getElementById('company-field').style.display='none'">
+          <span>I'm a job seeker</span>
+        </label>
+        <label>
+          <input type="radio" name="role" value="recruiter" onchange="document.getElementById('company-field').style.display='block'">
+          <span>I'm a recruiter</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" required placeholder="Jane Cooper">
+      </div>
+      <div class="field" id="company-field" style="display:none;">
+        <label for="company_name">Company name</label>
+        <input type="text" id="company_name" name="company_name" placeholder="Acme Corp">
+      </div>
+      <div class="field">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="Create a password">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Create account</button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+  </div>
+</div>
+{% endblock %}
